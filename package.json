@@ -1,0 +1,53 @@
+{
+  "name": "rent-reciept",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "commit": "git-cz",
+    "dev": "yarn app:prebuild && vite",
+    "build": "yarn app:prebuild && tsc && vite build",
+    "postinstall": "yarn husky install && yarn app:prebuild && yarn server:prebuild",
+    "pre-commit": "yarn lint:check",
+    "eslint:check": "eslint \"*.{js,jsx,ts,tsx}\"",
+    "eslint:fix": "eslint \"*.{js,jsx,ts,tsx}\" --fix",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier --write . --ignore-unknown",
+    "lint:check": "yarn eslint:check && yarn prettier:check",
+    "lint:fix": "yarn eslint:fix && yarn prettier:write",
+    "lint-staged:check": "lint-staged",
+    "preview": "vite preview",
+    "app:prebuild": "mkver src/version.ts"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
+    "@mui/icons-material": "^5.15.2",
+    "@mui/material": "^5.15.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "git-cz": "^4.9.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "mkver": "^2.1.0",
+    "postcss": "^8.4.32",
+    "prettier": "^3.1.1",
+    "prettier-plugin-tailwindcss": "^0.5.9",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
+  }
+}

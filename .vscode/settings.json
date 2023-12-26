@@ -1,0 +1,28 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "always"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "cSpell.words": ["ADHARCARD", "jwtid", "mkver", "PANCARD", "tailwindcss"],
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "[ignore]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "jest.autoRun": {
+    "watch": false,
+    "onSave": "test-only",
+    "onStartup": ["all-tests"]
+  },
+  "jest.debugMode": true,
+  "jest.showCoverageOnLoad": true,
+  "[dotenv]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
+}
