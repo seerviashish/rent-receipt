@@ -8,7 +8,7 @@
     "commit": "git-cz",
     "dev": "yarn app:prebuild && vite",
     "build": "yarn app:prebuild && tsc && vite build",
-    "postinstall": "yarn husky install && yarn app:prebuild && yarn server:prebuild",
+    "postinstall": "yarn husky install && yarn app:prebuild",
     "pre-commit": "yarn lint:check",
     "eslint:check": "eslint \"*.{js,jsx,ts,tsx}\"",
     "eslint:fix": "eslint \"*.{js,jsx,ts,tsx}\" --fix",
