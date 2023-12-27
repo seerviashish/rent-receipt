@@ -10,12 +10,13 @@ import {
   Typography,
 } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { Moment } from 'moment'
+import moment, { Moment } from 'moment'
 import ordinal from 'ordinal'
 import React, { useState } from 'react'
 import { NumericFormat, NumericFormatProps } from 'react-number-format'
 import { v4 as uuidV4 } from 'uuid'
 import { IntRange, PaymentMode, Receipt } from '../../types'
+import { round } from '../../utils'
 
 interface IForm {
   setReceipts: (receipts: Receipt[]) => void
@@ -44,6 +45,7 @@ type FormData = {
   rentCollectedOnMonth: FormValue<RentCollectedOnMonth>
   paymentMode: FormValue<`${PaymentMode}`>
   includeRentUptoDate: FormValue<boolean>
+  currencySymbol: FormValue<string>
 }
 
 const rentCollectedOnMonthValues: {
@@ -57,6 +59,29 @@ const rentCollectedOnMonthValues: {
   {
     value: 'next',
     label: 'Next Month',
+  },
+]
+
+const currencies: { value: string; label: string }[] = [
+  {
+    value: 'USD',
+    label: '$',
+  },
+  {
+    value: 'EUR',
+    label: '€',
+  },
+  {
+    value: 'BTC',
+    label: '฿',
+  },
+  {
+    value: 'JPY',
+    label: '¥',
+  },
+  {
+    value: 'INR',
+    label: '₹',
   },
 ]
 
@@ -80,12 +105,13 @@ const paymentModeValues: { value: `${PaymentMode}`; label: string }[] = [
 interface CustomProps {
   onChange: (event: { target: { name: string; value: string } }) => void
   name: string
+  prefix?: string
 }
 
 const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
   function NumericFormatCustom(props, ref) {
-    const { onChange, ...other } = props
-
+    const { onChange, prefix, ...other } = props
+    console.log('prefix ==> ', prefix)
     return (
       <NumericFormat
         {...other}
@@ -100,7 +126,7 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
         }}
         thousandSeparator
         valueIsNumericString
-        prefix="₹ "
+        prefix={prefix ? `${prefix} ` : ''}
       />
     )
   }
@@ -109,7 +135,7 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
 const Form: React.FC<IForm> = ({ setReceipts }) => {
   const [formData, setFormData] = useState<Partial<FormData>>()
   const handleOnChange =
-    (of: keyof Omit<FormData, 'rentFrom' | 'rentUpto'>) =>
+    (of: keyof Omit<FormData, 'rentFrom' | 'rentUpto' | 'monthlyRent'>) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData({
         ...formData,
@@ -162,6 +188,14 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
         ...validatedFormData.houseAddress,
         isError: true,
         error: 'Please enter your rental house address.',
+      }
+    }
+    if ((validatedFormData?.currencySymbol?.data ?? '').trim().length == 0) {
+      isValid = false
+      validatedFormData.currencySymbol = {
+        ...validatedFormData.currencySymbol,
+        isError: true,
+        error: 'Please select currency symbol.',
       }
     }
     if ((validatedFormData?.landLordAddress?.data ?? '').trim().length == 0) {
@@ -329,7 +363,8 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
         formData?.yourName?.data != null &&
         formData?.landLordAddress?.data != null &&
         formData?.yourPanNo?.data != null &&
-        formData?.landLordPanNo?.data != null
+        formData?.landLordPanNo?.data != null &&
+        formData?.currencySymbol?.data != null
       )
     ) {
       throw new Error('FormData Null')
@@ -381,25 +416,34 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
         .format('DD MMM, YYYY')
     )
     const paymentMode = formData.paymentMode.data
+    const currency = formData.currencySymbol.data
     const rentPerDay = (formData.monthlyRent.data * 12) / total12MonthDays
     console.log('rentPerDay ==> ', rentPerDay)
     const includeRentUptoDate = formData?.includeRentUptoDate?.data ?? false
-    duration.forEach((timeSlot) => {
+    duration.forEach((timeSlot, index) => {
       const noOfDays =
         Math.abs(timeSlot.end.diff(timeSlot.from, 'days')) +
+        (index < duration.length - 1 ? 1 : 0) +
         (includeRentUptoDate ? 1 : 0)
-      console.log('noOfDays ==> ', noOfDays)
+      console.log(
+        'noOfDays ==> ',
+        noOfDays,
+        ' days in month => ',
+        timeSlot.from.daysInMonth()
+      )
 
       receipts.push({
         tenant: {
           name: yourName,
           email: emailAddress,
-          rentPerMonth:
+          rentPerMonth: round(
             noOfDays < timeSlot.from.daysInMonth()
               ? noOfDays * rentPerDay
-              : rentPerMonth,
+              : rentPerMonth
+          ),
           address: houseAddress,
           panNo: yourPanNo,
+          currency,
         },
         landLord: {
           name: landLoadName,
@@ -430,6 +474,86 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
       setReceipts(receipts)
     }
   }
+  const handleMockData = () => {
+    setFormData({
+      ...formData,
+      yourName: {
+        data: 'John Wick',
+        isError: false,
+        error: '',
+      },
+      currencySymbol: {
+        data: 'INR',
+        isError: false,
+        error: '',
+      },
+      landLordName: {
+        data: 'James Bond',
+        isError: false,
+        error: '',
+      },
+      yourEmail: {
+        data: 'john.wick@gmail.com',
+        isError: false,
+        error: '',
+      },
+      yourPanNo: {
+        data: 'DAFA2345RE',
+        isError: false,
+        error: '',
+      },
+      landLordPanNo: {
+        data: 'RWQFA3422F',
+        isError: false,
+        error: '',
+      },
+      landLordAddress: {
+        data: '548 Denisha Drive,\nEast Rhett,\nMT 06410-7603',
+        isError: false,
+        error: '',
+      },
+      houseAddress: {
+        data: 'Apt. 874 740 Russel Inlet,\nWest Allene,\nME 71454',
+        isError: false,
+        error: '',
+      },
+      monthlyRent: {
+        data: 20000,
+        isError: false,
+        error: '',
+      },
+      rentFrom: {
+        data: moment().subtract(2, 'M').startOf('M').add(2, 'd'),
+        isError: false,
+        error: '',
+      },
+      rentUpto: {
+        data: moment().add(3, 'M').endOf('M').subtract(9, 'd'),
+        isError: false,
+        error: '',
+      },
+      rentCollectedOn: {
+        data: '2',
+        isError: false,
+        error: '',
+      },
+      rentCollectedOnMonth: {
+        data: 'next',
+        isError: false,
+        error: '',
+      },
+      includeRentUptoDate: {
+        data: true,
+        isError: false,
+        error: '',
+      },
+      paymentMode: {
+        data: 'UPI',
+        isError: false,
+        error: '',
+      },
+    })
+  }
 
   const rentCollectedOnValues: { value: RentCollectedOnData; label: string }[] =
     React.useMemo(() => {
@@ -447,6 +571,8 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
       })
       return values
     }, [])
+
+  console.log('formData => ', formData)
   return (
     <Box
       component={'form'}
@@ -518,24 +644,63 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
         />
       </Box>
       <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <TextField
-          required
-          InputProps={{
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            inputComponent: NumericFormatCustom as any,
-          }}
-          onChange={handleOnChange('monthlyRent')}
-          value={formData?.monthlyRent?.data ?? ''}
-          error={formData?.monthlyRent?.isError}
-          helperText={
-            formData?.monthlyRent?.isError
-              ? formData?.monthlyRent?.error
-              : 'Enter monthly rent amount. i.e 15000'
-          }
-          id="monthlyRent"
-          label="Enter monthly rent"
-          className="flex w-full md:w-full"
-        />
+        <Box className="flex w-full gap-2 md:w-full">
+          <TextField
+            className=" order-none w-1/3 md:w-1/4"
+            id="currencySymbol"
+            select
+            label="Currency"
+            onChange={handleOnChange('currencySymbol')}
+            value={formData?.currencySymbol?.data ?? ''}
+            error={formData?.currencySymbol?.isError}
+            helperText={
+              formData?.currencySymbol?.isError
+                ? formData?.currencySymbol?.error
+                : 'Select your currency'
+            }
+          >
+            {currencies.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            className=" order-none w-2/3 md:w-3/4"
+            required
+            InputProps={{
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              inputComponent: NumericFormatCustom as any,
+              inputProps: {
+                prefix: currencies.find(
+                  (currency) =>
+                    currency.value === formData?.currencySymbol?.data
+                )?.label,
+              },
+            }}
+            onChange={(e) => {
+              setFormData({
+                ...formData,
+                monthlyRent: {
+                  data: isNaN(parseFloat(e.target.value))
+                    ? undefined
+                    : parseFloat(e.target.value),
+                  isError: false,
+                  error: '',
+                },
+              })
+            }}
+            value={formData?.monthlyRent?.data ?? ''}
+            error={formData?.monthlyRent?.isError}
+            helperText={
+              formData?.monthlyRent?.isError
+                ? formData?.monthlyRent?.error
+                : 'Enter monthly rent amount. i.e 15000'
+            }
+            id="monthlyRent"
+            label="Enter monthly rent"
+          />
+        </Box>
         <TextField
           required
           onChange={handleOnChange('yourEmail')}
@@ -756,6 +921,9 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
         </Button>
         <Button variant="contained" onClick={handleGenerateReceipts}>
           Generate Receipts
+        </Button>
+        <Button variant="contained" onClick={handleMockData}>
+          Fill Mock Data
         </Button>
       </Box>
     </Box>

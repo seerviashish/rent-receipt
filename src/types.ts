@@ -16,6 +16,7 @@ export type Receipt = {
     email: string
     address: string
     panNo: string
+    currency: string
   }
   landLord: {
     name: string
