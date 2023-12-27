@@ -4,7 +4,6 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "commit": "git-cz",
     "dev": "yarn app:prebuild && vite",
     "deploy": "gh-pages -d dist",
