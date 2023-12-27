@@ -1,18 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import {
+  Alert,
+  AlertColor,
   Box,
   Button,
   Checkbox,
   FormControl,
   FormControlLabel,
+  IconButton,
+  InputAdornment,
   MenuItem,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import CryptoJS from 'crypto-js'
+import cryptoRandomString from 'crypto-random-string'
 import moment, { Moment } from 'moment'
 import ordinal from 'ordinal'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { NumericFormat, NumericFormatProps } from 'react-number-format'
 import { v4 as uuidV4 } from 'uuid'
 import { IntRange, PaymentMode, Receipt } from '../../types'
@@ -20,6 +29,7 @@ import { round } from '../../utils'
 
 interface IForm {
   setReceipts: (receipts: Receipt[]) => void
+  receipts: Receipt[]
 }
 
 type FormValue<T> = {
@@ -128,19 +138,63 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
   }
 )
 
-const Form: React.FC<IForm> = ({ setReceipts }) => {
+const Form: React.FC<IForm> = ({ setReceipts, receipts }) => {
   const [formData, setFormData] = useState<Partial<FormData>>()
+  const [showSecret, setShowSecret] = useState<boolean>(false)
+  const [warn, setWarn] = useState<{
+    open: boolean
+    message?: string
+    type?: AlertColor
+  }>({ open: false })
+  const secretPhraseRef = useRef<HTMLInputElement>(null)
+
+  const handleShowSecret = () => {
+    setShowSecret((showSecret) => !showSecret)
+  }
+  const handleMouseDownSecret = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault()
+  }
   const handleOnChange =
     (of: keyof Omit<FormData, 'rentFrom' | 'rentUpto' | 'monthlyRent'>) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData({
-        ...formData,
-        [of]: {
-          data: e.target.value,
-          error: '',
-          isError: false,
-        },
-      })
+      if (of === 'secretPhrase') {
+        const secret = e.target.value
+        let isError = false
+        let error = ''
+        if (secret.length > 0 && secret.trim().length == 0) {
+          isError = true
+          error = 'Should not contains only blank spaces!'
+        } else if (
+          secret.length > 0 &&
+          secret.trim().length > 0 &&
+          !secret.match(
+            /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,40}$/
+          )
+        ) {
+          isError = true
+          error =
+            '1. Secret should contains minimum 8 and maximum 40 characters.\n2. Secret should contains at least one uppercase English letter.\n3. Secret should contains at least one lowercase English letter.\n4. Secret should contain at least one digit.\n5. Secret should contain at least one special character.'
+        }
+        setFormData({
+          ...formData,
+          [of]: {
+            data: e.target.value,
+            error,
+            isError,
+          },
+        })
+      } else {
+        setFormData({
+          ...formData,
+          [of]: {
+            data: e.target.value,
+            error: '',
+            isError: false,
+          },
+        })
+      }
     }
 
   const validateFormData = (): boolean => {
@@ -321,7 +375,7 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
 
       return rentCollectedOnDate
     }
-    const days = parseInt(rentCollectedOn)
+    const days = parseInt(rentCollectedOn) - 1
     const startOfCurrentMonth = startDate.startOf('M')
     const rentDateOfCurrentMonth = startDate.clone().startOf('M').add(days, 'd')
     const rentDateOfNextMonth = startDate
@@ -441,6 +495,55 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
       setReceipts(receipts)
     }
   }
+
+  const handleSignReceipt = () => {
+    if (formData?.secretPhrase?.data == null) {
+      setFormData({
+        ...formData,
+        secretPhrase: {
+          ...formData?.secretPhrase,
+          isError: true,
+          error: 'Please enter secret phrase before signing receipts.',
+        },
+      })
+      return
+    }
+    if (receipts?.length == 0) {
+      setWarn({
+        open: true,
+        type: 'warning',
+        message: 'Receipts are not generated!',
+      })
+      return
+    }
+    const secret = formData.secretPhrase.data
+    const updatedReceipts = receipts.map((receipt) => {
+      const encrypted = CryptoJS.AES.encrypt(
+        JSON.stringify(receipt),
+        secret
+      ).toString()
+      receipt.signature = `https://seerviashish.github.io/rent-receipt/view?qr=${encodeURIComponent(
+        encrypted
+      )}`
+      return receipt
+    })
+    setReceipts(updatedReceipts)
+  }
+  const handleOnGenerateSecret = () => {
+    const secret = cryptoRandomString({
+      length: 40,
+      characters:
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#?!@$%^&*-',
+    })
+    setFormData({
+      ...formData,
+      secretPhrase: {
+        data: secret,
+        isError: false,
+        error: '',
+      },
+    })
+  }
   const handleMockData = () => {
     setFormData({
       ...formData,
@@ -540,385 +643,427 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
     }, [])
 
   return (
-    <Box
-      component={'form'}
-      className="flex w-full flex-col items-center gap-8 p-2"
-      noValidate
-      autoComplete="off"
-    >
-      <Box className="flex justify-center gap-2">
-        <Typography>Generate Rent Receipt</Typography>
-      </Box>
-      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <TextField
-          required
-          id="yourName"
-          label="Your name"
-          onChange={handleOnChange('yourName')}
-          value={formData?.yourName?.data ?? ''}
-          error={formData?.yourName?.isError}
-          helperText={
-            formData?.yourName?.isError
-              ? formData?.yourName?.error
-              : 'Enter your name.'
-          }
-          className="flex w-full md:w-full"
-        />
-        <TextField
-          required
-          id="landLoadName"
-          onChange={handleOnChange('landLordName')}
-          value={formData?.landLordName?.data ?? ''}
-          error={formData?.landLordName?.isError}
-          helperText={
-            formData?.landLordName?.isError
-              ? formData?.landLordName?.error
-              : 'Enter landlord`s name.'
-          }
-          label="Landlord's name"
-          className="flex w-full md:w-full"
-        />
-      </Box>
-      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <TextField
-          required
-          id="yourPanNo"
-          label="Your PAN number"
-          onChange={handleOnChange('yourPanNo')}
-          value={formData?.yourPanNo?.data ?? ''}
-          error={formData?.yourPanNo?.isError}
-          helperText={
-            formData?.yourPanNo?.isError
-              ? formData?.yourPanNo?.error
-              : 'Enter your PAN number.'
-          }
-          className="flex w-full md:w-full"
-        />
-        <TextField
-          required
-          id="landLordPanNo"
-          onChange={handleOnChange('landLordPanNo')}
-          value={formData?.landLordPanNo?.data ?? ''}
-          error={formData?.landLordPanNo?.isError}
-          helperText={
-            formData?.landLordPanNo?.isError
-              ? formData?.landLordPanNo?.error
-              : 'Enter landlord`s PAN number.'
-          }
-          label="Landlord's PAN number"
-          className="flex w-full md:w-full"
-        />
-      </Box>
-      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <Box className="flex w-full gap-2 md:w-full">
+    <>
+      <Box
+        component={'form'}
+        className="flex w-full flex-col items-center gap-8 p-2"
+        noValidate
+        autoComplete="off"
+      >
+        <Box className="flex justify-center gap-2">
+          <Typography>Generate Rent Receipt</Typography>
+        </Box>
+        <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
           <TextField
-            className=" order-none w-1/3 md:w-1/4"
-            id="currencySymbol"
-            select
-            label="Currency"
-            onChange={handleOnChange('currencySymbol')}
-            value={formData?.currencySymbol?.data ?? ''}
-            error={formData?.currencySymbol?.isError}
+            required
+            id="yourName"
+            label="Your name"
+            onChange={handleOnChange('yourName')}
+            value={formData?.yourName?.data ?? ''}
+            error={formData?.yourName?.isError}
             helperText={
-              formData?.currencySymbol?.isError
-                ? formData?.currencySymbol?.error
-                : 'Select your currency'
+              formData?.yourName?.isError
+                ? formData?.yourName?.error
+                : 'Enter your name.'
             }
+            className="flex w-full md:w-full"
+          />
+          <TextField
+            required
+            id="landLoadName"
+            onChange={handleOnChange('landLordName')}
+            value={formData?.landLordName?.data ?? ''}
+            error={formData?.landLordName?.isError}
+            helperText={
+              formData?.landLordName?.isError
+                ? formData?.landLordName?.error
+                : 'Enter landlord`s name.'
+            }
+            label="Landlord's name"
+            className="flex w-full md:w-full"
+          />
+        </Box>
+        <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
+          <TextField
+            required
+            id="yourPanNo"
+            label="Your PAN number"
+            onChange={handleOnChange('yourPanNo')}
+            value={formData?.yourPanNo?.data ?? ''}
+            error={formData?.yourPanNo?.isError}
+            helperText={
+              formData?.yourPanNo?.isError
+                ? formData?.yourPanNo?.error
+                : 'Enter your PAN number.'
+            }
+            className="flex w-full md:w-full"
+          />
+          <TextField
+            required
+            id="landLordPanNo"
+            onChange={handleOnChange('landLordPanNo')}
+            value={formData?.landLordPanNo?.data ?? ''}
+            error={formData?.landLordPanNo?.isError}
+            helperText={
+              formData?.landLordPanNo?.isError
+                ? formData?.landLordPanNo?.error
+                : 'Enter landlord`s PAN number.'
+            }
+            label="Landlord's PAN number"
+            className="flex w-full md:w-full"
+          />
+        </Box>
+        <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
+          <Box className="flex w-full gap-2 md:w-full">
+            <TextField
+              className=" order-none w-1/3 md:w-1/4"
+              id="currencySymbol"
+              select
+              label="Currency"
+              onChange={handleOnChange('currencySymbol')}
+              value={formData?.currencySymbol?.data ?? ''}
+              error={formData?.currencySymbol?.isError}
+              helperText={
+                formData?.currencySymbol?.isError
+                  ? formData?.currencySymbol?.error
+                  : 'Select your currency'
+              }
+            >
+              {currencies.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              className=" order-none w-2/3 md:w-3/4"
+              required
+              InputProps={{
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                inputComponent: NumericFormatCustom as any,
+                inputProps: {
+                  prefix: currencies.find(
+                    (currency) =>
+                      currency.value === formData?.currencySymbol?.data
+                  )?.label,
+                },
+              }}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  monthlyRent: {
+                    data: isNaN(parseFloat(e.target.value))
+                      ? undefined
+                      : parseFloat(e.target.value),
+                    isError: false,
+                    error: '',
+                  },
+                })
+              }}
+              value={formData?.monthlyRent?.data ?? ''}
+              error={formData?.monthlyRent?.isError}
+              helperText={
+                formData?.monthlyRent?.isError
+                  ? formData?.monthlyRent?.error
+                  : 'Enter monthly rent amount. i.e 15000'
+              }
+              id="monthlyRent"
+              label="Enter monthly rent"
+            />
+          </Box>
+          <TextField
+            required
+            onChange={handleOnChange('yourEmail')}
+            value={formData?.yourEmail?.data ?? ''}
+            error={formData?.yourEmail?.isError}
+            helperText={
+              formData?.yourEmail?.isError
+                ? formData?.yourEmail?.error
+                : 'Enter your email address.'
+            }
+            type="email"
+            id="yourEmail"
+            label="Your email"
+            className="flex w-full md:w-full"
+          />
+        </Box>
+        <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
+          <TextField
+            required
+            onChange={handleOnChange('houseAddress')}
+            value={formData?.houseAddress?.data ?? ''}
+            error={formData?.houseAddress?.isError}
+            helperText={
+              formData?.houseAddress?.isError
+                ? formData?.houseAddress?.error
+                : 'Enter your rental house address.'
+            }
+            id="houseAddress"
+            label="Your house address"
+            multiline
+            rows={5}
+            className="flex w-full md:w-full"
+          />
+        </Box>
+        <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
+          <TextField
+            required
+            onChange={handleOnChange('landLordAddress')}
+            value={formData?.landLordAddress?.data ?? ''}
+            error={formData?.landLordAddress?.isError}
+            helperText={
+              formData?.landLordAddress?.isError
+                ? formData?.landLordAddress?.error
+                : 'Enter landlord`s house address.'
+            }
+            id="landLordAddress"
+            label="Landlord's house address"
+            multiline
+            rows={5}
+            className="flex w-full md:w-full"
+          />
+        </Box>
+        <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
+          <DatePicker
+            value={formData?.rentFrom?.data ?? null}
+            onChange={(newDate) => {
+              const newDateCheck: 'true' | 'false' | 'no-check-required' =
+                formData?.rentUpto?.data
+                  ? (newDate as Moment).isBefore(
+                      formData.rentUpto.data as Moment
+                    )
+                    ? 'true'
+                    : 'false'
+                  : 'no-check-required'
+              setFormData({
+                ...formData,
+                rentFrom: {
+                  data: newDate as Moment,
+                  error: '',
+                  isError: false,
+                },
+                rentUpto: {
+                  ...(newDateCheck === 'true'
+                    ? {
+                        ...formData?.rentUpto,
+                        isError: false,
+                        error: '',
+                      }
+                    : newDateCheck === 'false'
+                      ? {
+                          ...formData?.rentUpto,
+                          isError: true,
+                          error:
+                            'Please select rent upto date after than rent from date.',
+                        }
+                      : { ...formData?.rentUpto }),
+                },
+              })
+            }}
+            slotProps={{
+              textField: {
+                helperText: formData?.rentFrom?.isError
+                  ? formData?.rentFrom?.error ?? ''
+                  : 'Select rent starting date.',
+                error: formData?.rentFrom?.isError ?? false,
+              },
+            }}
+            format="DD MMMM, YYYY"
+            label="Rent from"
+            className="flex w-full md:w-full"
+          />
+          <Box className="flex w-full flex-col items-start md:w-full">
+            <DatePicker
+              value={formData?.rentUpto?.data ?? null}
+              onChange={(newDate) => {
+                setFormData({
+                  ...formData,
+                  rentUpto: {
+                    data: newDate as Moment,
+                    error: '',
+                    isError: false,
+                  },
+                })
+              }}
+              slotProps={{
+                textField: {
+                  helperText: formData?.rentUpto?.isError
+                    ? formData?.rentUpto?.error ?? ''
+                    : 'Select rent upto date.',
+                  error: formData?.rentUpto?.isError ?? false,
+                },
+              }}
+              format="DD MMMM, YYYY"
+              label="Rent upto"
+              className="flex w-full md:w-full"
+            />
+            <FormControl component="fieldset" variant="standard">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData?.includeRentUptoDate?.data ?? false}
+                    inputProps={{
+                      'aria-label':
+                        'Include rent upto date for rent calculation',
+                    }}
+                    onChange={(event) => {
+                      setFormData({
+                        ...formData,
+                        includeRentUptoDate: {
+                          data: event.target.checked,
+                          isError: false,
+                          error: '',
+                        },
+                      })
+                    }}
+                  />
+                }
+                label="Include rent upto date for rent calculation"
+              />
+            </FormControl>
+          </Box>
+        </Box>
+        <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
+          <TextField
+            required
+            select
+            onChange={handleOnChange('rentCollectedOn')}
+            value={formData?.rentCollectedOn?.data ?? ''}
+            error={formData?.rentCollectedOn?.isError}
+            helperText={
+              formData?.rentCollectedOn?.isError
+                ? formData?.rentCollectedOn?.error
+                : ''
+            }
+            id="rentCollectedOn"
+            label="Rent collected on"
+            className="flex w-full md:w-full"
           >
-            {currencies.map((option) => (
+            {rentCollectedOnValues.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
             ))}
           </TextField>
           <TextField
-            className=" order-none w-2/3 md:w-3/4"
             required
-            InputProps={{
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              inputComponent: NumericFormatCustom as any,
-              inputProps: {
-                prefix: currencies.find(
-                  (currency) =>
-                    currency.value === formData?.currencySymbol?.data
-                )?.label,
-              },
-            }}
-            onChange={(e) => {
-              setFormData({
-                ...formData,
-                monthlyRent: {
-                  data: isNaN(parseFloat(e.target.value))
-                    ? undefined
-                    : parseFloat(e.target.value),
-                  isError: false,
-                  error: '',
-                },
-              })
-            }}
-            value={formData?.monthlyRent?.data ?? ''}
-            error={formData?.monthlyRent?.isError}
+            select
+            onChange={handleOnChange('rentCollectedOnMonth')}
+            value={formData?.rentCollectedOnMonth?.data ?? ''}
+            error={formData?.rentCollectedOnMonth?.isError}
             helperText={
-              formData?.monthlyRent?.isError
-                ? formData?.monthlyRent?.error
-                : 'Enter monthly rent amount. i.e 15000'
+              formData?.rentCollectedOnMonth?.isError
+                ? formData?.rentCollectedOnMonth?.error
+                : ''
             }
-            id="monthlyRent"
-            label="Enter monthly rent"
-          />
-        </Box>
-        <TextField
-          required
-          onChange={handleOnChange('yourEmail')}
-          value={formData?.yourEmail?.data ?? ''}
-          error={formData?.yourEmail?.isError}
-          helperText={
-            formData?.yourEmail?.isError
-              ? formData?.yourEmail?.error
-              : 'Enter your email address.'
-          }
-          type="email"
-          id="yourEmail"
-          label="Your email"
-          className="flex w-full md:w-full"
-        />
-      </Box>
-      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <TextField
-          required
-          onChange={handleOnChange('houseAddress')}
-          value={formData?.houseAddress?.data ?? ''}
-          error={formData?.houseAddress?.isError}
-          helperText={
-            formData?.houseAddress?.isError
-              ? formData?.houseAddress?.error
-              : 'Enter your rental house address.'
-          }
-          id="houseAddress"
-          label="Your house address"
-          multiline
-          rows={5}
-          className="flex w-full md:w-full"
-        />
-      </Box>
-      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <TextField
-          required
-          onChange={handleOnChange('landLordAddress')}
-          value={formData?.landLordAddress?.data ?? ''}
-          error={formData?.landLordAddress?.isError}
-          helperText={
-            formData?.landLordAddress?.isError
-              ? formData?.landLordAddress?.error
-              : 'Enter landlord`s house address.'
-          }
-          id="landLordAddress"
-          label="Landlord's house address"
-          multiline
-          rows={5}
-          className="flex w-full md:w-full"
-        />
-      </Box>
-      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <DatePicker
-          value={formData?.rentFrom?.data ?? null}
-          onChange={(newDate) => {
-            const newDateCheck: 'true' | 'false' | 'no-check-required' =
-              formData?.rentUpto?.data
-                ? (newDate as Moment).isBefore(formData.rentUpto.data as Moment)
-                  ? 'true'
-                  : 'false'
-                : 'no-check-required'
-            setFormData({
-              ...formData,
-              rentFrom: {
-                data: newDate as Moment,
-                error: '',
-                isError: false,
-              },
-              rentUpto: {
-                ...(newDateCheck === 'true'
-                  ? {
-                      ...formData?.rentUpto,
-                      isError: false,
-                      error: '',
-                    }
-                  : newDateCheck === 'false'
-                    ? {
-                        ...formData?.rentUpto,
-                        isError: true,
-                        error:
-                          'Please select rent upto date after than rent from date.',
-                      }
-                    : { ...formData?.rentUpto }),
-              },
-            })
-          }}
-          slotProps={{
-            textField: {
-              helperText: formData?.rentFrom?.isError
-                ? formData?.rentFrom?.error ?? ''
-                : 'Select rent starting date.',
-              error: formData?.rentFrom?.isError ?? false,
-            },
-          }}
-          format="DD MMMM, YYYY"
-          label="Rent from"
-          className="flex w-full md:w-full"
-        />
-        <Box className="flex w-full flex-col items-start md:w-full">
-          <DatePicker
-            value={formData?.rentUpto?.data ?? null}
-            onChange={(newDate) => {
-              setFormData({
-                ...formData,
-                rentUpto: {
-                  data: newDate as Moment,
-                  error: '',
-                  isError: false,
-                },
-              })
-            }}
-            slotProps={{
-              textField: {
-                helperText: formData?.rentUpto?.isError
-                  ? formData?.rentUpto?.error ?? ''
-                  : 'Select rent upto date.',
-                error: formData?.rentUpto?.isError ?? false,
-              },
-            }}
-            format="DD MMMM, YYYY"
-            label="Rent upto"
+            id="rentCollectedOnMonth"
+            label="Rent collection month"
             className="flex w-full md:w-full"
+          >
+            {rentCollectedOnMonthValues.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Box>
+        <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
+          <TextField
+            required
+            select
+            onChange={handleOnChange('paymentMode')}
+            value={formData?.paymentMode?.data ?? ''}
+            error={formData?.paymentMode?.isError}
+            helperText={
+              formData?.paymentMode?.isError ? formData?.paymentMode?.error : ''
+            }
+            id="paymentMode"
+            label="Payment mode"
+            className="flex w-full md:w-1/3"
+          >
+            {paymentModeValues.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Box>
+        <Box className="flex w-full flex-col gap-4">
+          <TextField
+            ref={secretPhraseRef}
+            onChange={handleOnChange('secretPhrase')}
+            type={showSecret ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle secret visibility"
+                    onClick={handleShowSecret}
+                    onMouseDown={handleMouseDownSecret}
+                    edge="end"
+                  >
+                    {showSecret ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            value={formData?.secretPhrase?.data ?? ''}
+            error={formData?.secretPhrase?.isError}
+            helperText={
+              formData?.secretPhrase?.isError
+                ? formData?.secretPhrase?.error
+                : '1. Enter secret phrase for ownership/verification of rent receipts.\n2. Store this secret phase and never share with anyone.\n3. Once you lost the secret can`t be retrieved.\n4. Secret should have max length upto 40 characters.'
+            }
+            id="secretPhrase"
+            label="Enter secret phrase"
+            className="flex w-full whitespace-pre-wrap md:w-1/2"
           />
-          <FormControl component="fieldset" variant="standard">
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData?.includeRentUptoDate?.data ?? false}
-                  inputProps={{
-                    'aria-label': 'Include rent upto date for rent calculation',
-                  }}
-                  onChange={(event) => {
-                    setFormData({
-                      ...formData,
-                      includeRentUptoDate: {
-                        data: event.target.checked,
-                        isError: false,
-                        error: '',
-                      },
-                    })
-                  }}
-                />
-              }
-              label="Include rent upto date for rent calculation"
-            />
-          </FormControl>
+          <Box className="flex w-full flex-col gap-4 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
+            <Button variant="outlined" onClick={handleOnGenerateSecret}>
+              {'Generate Strong Secret'}
+            </Button>
+            <Button variant="contained" onClick={handleSignReceipt}>
+              {'Sign Receipts'}
+            </Button>
+          </Box>
+        </Box>
+        <Box className="flex w-full flex-col gap-4 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setFormData({})
+              setReceipts([])
+            }}
+          >
+            {'Reset'}
+          </Button>
+          <Button variant="contained" onClick={handleGenerateReceipts}>
+            {'Generate Receipts'}
+          </Button>
+          <Button variant="contained" onClick={handleMockData}>
+            {'Fill Mock Data'}
+          </Button>
         </Box>
       </Box>
-      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <TextField
-          required
-          select
-          onChange={handleOnChange('rentCollectedOn')}
-          value={formData?.rentCollectedOn?.data ?? ''}
-          error={formData?.rentCollectedOn?.isError}
-          helperText={
-            formData?.rentCollectedOn?.isError
-              ? formData?.rentCollectedOn?.error
-              : ''
-          }
-          id="rentCollectedOn"
-          label="Rent collected on"
-          className="flex w-full md:w-full"
-        >
-          {rentCollectedOnValues.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          required
-          select
-          onChange={handleOnChange('rentCollectedOnMonth')}
-          value={formData?.rentCollectedOnMonth?.data ?? ''}
-          error={formData?.rentCollectedOnMonth?.isError}
-          helperText={
-            formData?.rentCollectedOnMonth?.isError
-              ? formData?.rentCollectedOnMonth?.error
-              : ''
-          }
-          id="rentCollectedOnMonth"
-          label="Rent collection month"
-          className="flex w-full md:w-full"
-        >
-          {rentCollectedOnMonthValues.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Box>
-      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <TextField
-          required
-          select
-          onChange={handleOnChange('paymentMode')}
-          value={formData?.paymentMode?.data ?? ''}
-          error={formData?.paymentMode?.isError}
-          helperText={
-            formData?.paymentMode?.isError ? formData?.paymentMode?.error : ''
-          }
-          id="paymentMode"
-          label="Payment mode"
-          className="flex w-full md:w-1/3"
-        >
-          {paymentModeValues.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Box>
-      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <TextField
-          onChange={handleOnChange('secretPhrase')}
-          value={formData?.secretPhrase?.data ?? ''}
-          error={formData?.secretPhrase?.isError}
-          helperText={
-            formData?.secretPhrase?.isError
-              ? formData?.secretPhrase?.error
-              : 'Enter secret phrase for ownership/verification of rent receipts'
-          }
-          id="secretPhrase"
-          label="Enter secret phrase"
-          multiline
-          rows={5}
-          className="flex w-full md:w-full"
-        />
-      </Box>
-      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <Button
-          variant="outlined"
-          onClick={() => {
-            setFormData({})
-            setReceipts([])
+      <Snackbar
+        open={warn.open}
+        autoHideDuration={6000}
+        onClose={() => {
+          setWarn({ open: false })
+        }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <Alert
+          onClose={() => {
+            setWarn({ open: false })
           }}
+          severity={warn?.type ?? 'info'}
+          sx={{ width: '100%' }}
         >
-          Reset
-        </Button>
-        <Button variant="contained" onClick={handleGenerateReceipts}>
-          Generate Receipts
-        </Button>
-        <Button variant="contained" onClick={handleMockData}>
-          Fill Mock Data
-        </Button>
-        <Button variant="contained" onClick={handleMockData}>
-          Add Signature
-        </Button>
-      </Box>
-    </Box>
+          {warn?.message ?? ''}
+        </Alert>
+      </Snackbar>
+    </>
   )
 }
 export default Form

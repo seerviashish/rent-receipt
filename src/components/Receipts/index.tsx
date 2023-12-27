@@ -203,13 +203,18 @@ const Receipts: React.FC<IReceipts> = ({ receipts }) => {
                   {receipt.landLord.address}
                 </Typography>
               </Box>
-              <Box className="flex h-20 w-20 flex-col items-center gap-2">
-                <QRCode
-                  size={256}
-                  style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
-                  value={'Hello'}
-                  viewBox={`0 0 256 256`}
-                />
+              <Box className="h-50 flex w-60 flex-col items-center gap-2">
+                {receipt.signature && receipt.signature?.length > 0 && (
+                  <QRCode
+                    size={256}
+                    style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+                    value={receipt.signature}
+                    viewBox={`0 0 256 256`}
+                    level="Q"
+                    bgColor={'#ffffff00'}
+                    fgColor={'#00000030'}
+                  />
+                )}
               </Box>
               <Box className="flex flex-col items-center gap-2">
                 <Box className=" flex h-36 w-28 items-center border border-dashed border-blue-500 p-1 text-center">

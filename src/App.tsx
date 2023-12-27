@@ -8,7 +8,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <Form setReceipts={setReceipts} />
+      <Form setReceipts={setReceipts} receipts={receipts} />
       <Receipts receipts={receipts} />
     </>
   )
