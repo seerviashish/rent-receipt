@@ -19,7 +19,8 @@
     "lint:fix": "yarn eslint:fix && yarn prettier:write",
     "lint-staged:check": "lint-staged",
     "preview": "vite preview",
-    "app:prebuild": "mkver src/version.ts"
+    "app:prebuild": "mkver src/version.ts",
+    "release": "yarn build && yarn release-it"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
