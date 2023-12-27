@@ -27,6 +27,7 @@ export type Receipt = {
   rentUpto: Moment
   rentCollectedOn: Moment
   paymentMode: `${PaymentMode}`
+  signature?: string
 }
 
 export type Enumerate<

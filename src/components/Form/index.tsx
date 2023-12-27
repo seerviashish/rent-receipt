@@ -46,6 +46,7 @@ type FormData = {
   paymentMode: FormValue<`${PaymentMode}`>
   includeRentUptoDate: FormValue<boolean>
   currencySymbol: FormValue<string>
+  secretPhrase: FormValue<string>
 }
 
 const rentCollectedOnMonthValues: {
@@ -74,10 +75,6 @@ const currencies: { value: string; label: string }[] = [
   {
     value: 'BTC',
     label: '฿',
-  },
-  {
-    value: 'JPY',
-    label: '¥',
   },
   {
     value: 'INR',
@@ -111,7 +108,6 @@ interface CustomProps {
 const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
   function NumericFormatCustom(props, ref) {
     const { onChange, prefix, ...other } = props
-    console.log('prefix ==> ', prefix)
     return (
       <NumericFormat
         {...other}
@@ -264,11 +260,6 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
         validatedFormData?.rentUpto?.data as Moment
       )
     ) {
-      console.log(
-        'validation failed ===',
-        (validatedFormData?.rentFrom?.data as Moment).format('DD MMM, YYYY'),
-        (validatedFormData?.rentUpto?.data as Moment).format('DD MMM, YYYY')
-      )
       isValid = false
       validatedFormData.rentFrom = {
         ...validatedFormData.rentFrom,
@@ -385,13 +376,7 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
           : startDate.endOf('M').clone(),
       })
     }
-    console.log(
-      'duration ==> ',
-      duration.map((d) => ({
-        s: d.from.format('DD MMM, YYYY'),
-        e: d.end.format('DD MMM, YYYY'),
-      }))
-    )
+
     const yourName = formData.yourName.data
     const emailAddress = formData.yourEmail.data
     const rentPerMonth = formData.monthlyRent.data
@@ -406,31 +391,15 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
       .clone()
       .add(12, 'M')
       .diff((formData.rentFrom.data as Moment).clone(), 'days')
-    console.log(
-      'total12MonthDays => ',
-      total12MonthDays,
-      (formData.rentFrom.data as Moment).clone().format('DD MMM, YYYY'),
-      (formData.rentFrom.data as Moment)
-        .clone()
-        .add(12, 'M')
-        .format('DD MMM, YYYY')
-    )
     const paymentMode = formData.paymentMode.data
     const currency = formData.currencySymbol.data
     const rentPerDay = (formData.monthlyRent.data * 12) / total12MonthDays
-    console.log('rentPerDay ==> ', rentPerDay)
     const includeRentUptoDate = formData?.includeRentUptoDate?.data ?? false
     duration.forEach((timeSlot, index) => {
       const noOfDays =
         Math.abs(timeSlot.end.diff(timeSlot.from, 'days')) +
         (index < duration.length - 1 ? 1 : 0) +
-        (includeRentUptoDate ? 1 : 0)
-      console.log(
-        'noOfDays ==> ',
-        noOfDays,
-        ' days in month => ',
-        timeSlot.from.daysInMonth()
-      )
+        (index == duration.length - 1 && includeRentUptoDate ? 1 : 0)
 
       receipts.push({
         tenant: {
@@ -467,10 +436,8 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
 
   const handleGenerateReceipts = () => {
     const isFormDataValid = validateFormData()
-    console.log('isFormDataValid => ', isFormDataValid)
     if (isFormDataValid) {
       const receipts: Receipt[] = generateReceiptData()
-      console.log('receipts ===> ', receipts)
       setReceipts(receipts)
     }
   }
@@ -572,7 +539,6 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
       return values
     }, [])
 
-  console.log('formData => ', formData)
   return (
     <Box
       component={'form'}
@@ -916,7 +882,30 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
         </TextField>
       </Box>
       <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
-        <Button variant="outlined" onClick={() => setFormData({})}>
+        <TextField
+          onChange={handleOnChange('secretPhrase')}
+          value={formData?.secretPhrase?.data ?? ''}
+          error={formData?.secretPhrase?.isError}
+          helperText={
+            formData?.secretPhrase?.isError
+              ? formData?.secretPhrase?.error
+              : 'Enter secret phrase for ownership/verification of rent receipts'
+          }
+          id="secretPhrase"
+          label="Enter secret phrase"
+          multiline
+          rows={5}
+          className="flex w-full md:w-full"
+        />
+      </Box>
+      <Box className="flex w-full flex-col gap-8 sm:flex-col md:flex-col lg:flex-row xl:flex-row 2xl:flex-row">
+        <Button
+          variant="outlined"
+          onClick={() => {
+            setFormData({})
+            setReceipts([])
+          }}
+        >
           Reset
         </Button>
         <Button variant="contained" onClick={handleGenerateReceipts}>
@@ -924,6 +913,9 @@ const Form: React.FC<IForm> = ({ setReceipts }) => {
         </Button>
         <Button variant="contained" onClick={handleMockData}>
           Fill Mock Data
+        </Button>
+        <Button variant="contained" onClick={handleMockData}>
+          Add Signature
         </Button>
       </Box>
     </Box>
