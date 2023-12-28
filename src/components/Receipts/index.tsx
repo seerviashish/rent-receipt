@@ -184,7 +184,7 @@ const Receipts: React.FC<IReceipts> = ({ receipts }) => {
                 </Typography>
               </Typography>
             </Box>
-            <Box className="flex flex-row items-center justify-between">
+            <Box className="flex flex-row flex-wrap items-center justify-between gap-7 sm:gap-2 print:gap-2">
               <Box className="flex flex-col gap-2">
                 <Typography component={'p'} className=" !font-bold">
                   <Typography component={'span'} className="block">
@@ -203,33 +203,35 @@ const Receipts: React.FC<IReceipts> = ({ receipts }) => {
                   {receipt.landLord.address}
                 </Typography>
               </Box>
-              <Box className="h-50 flex w-60 flex-col items-center gap-2">
+              <Box className="flex h-36 w-36 min-w-36 flex-col items-center gap-2">
                 {receipt.signature && receipt.signature?.length > 0 && (
                   <QRCode
                     size={256}
                     style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
                     value={receipt.signature}
                     viewBox={`0 0 256 256`}
-                    level="Q"
+                    level="H"
                     bgColor={'#ffffff00'}
-                    fgColor={'#00000030'}
+                    fgColor={'#00000090'}
                   />
                 )}
               </Box>
-              <Box className="flex flex-col items-center gap-2">
-                <Box className=" flex h-36 w-28 items-center border border-dashed border-blue-500 p-1 text-center">
-                  <Typography component={'span'} className="text-slate-400">
-                    {'Affix Revenue Stamp of Re.1/)'}
-                  </Typography>
-                </Box>
+              <Box className="flex flex-1 flex-col items-end justify-between gap-2 sm:flex-grow-0 sm:items-center print:flex-grow-0">
                 <Box className="flex flex-col items-center gap-2">
-                  <Box className="h-12 w-36 border border-blue-500 md:h-14 md:w-64 print:h-14"></Box>
-                  <Typography
-                    component={'p'}
-                    className=" w-40 text-center md:w-full print:w-full"
-                  >
-                    {'Signature of House Owner'}
-                  </Typography>
+                  <Box className=" flex h-36 w-28 items-center border border-dashed border-blue-500 p-1 text-center">
+                    <Typography component={'span'} className="text-slate-400">
+                      {'Affix Revenue Stamp of Re.1/)'}
+                    </Typography>
+                  </Box>
+                  <Box className="flex flex-col items-center gap-2">
+                    <Box className="h-12 w-36 border border-blue-500 md:h-14 md:w-64 print:h-14"></Box>
+                    <Typography
+                      component={'p'}
+                      className=" w-40 text-center md:w-full print:w-full"
+                    >
+                      {'Signature of House Owner'}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
             </Box>

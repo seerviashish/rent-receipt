@@ -1,4 +1,8 @@
-# React + TypeScript + Vite
+# Rent-Receipt
+
+![main](https://github.com/seerviashish/rent-receipt/actions/workflows/main.yml/badge.svg) ![codeql](https://github.com/seerviashish/rent-receipt/actions/workflows/codeql.yml/badge.svg)
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

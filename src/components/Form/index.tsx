@@ -518,10 +518,7 @@ const Form: React.FC<IForm> = ({ setReceipts, receipts }) => {
     }
     const secret = formData.secretPhrase.data
     const updatedReceipts = receipts.map((receipt) => {
-      const encrypted = CryptoJS.AES.encrypt(
-        JSON.stringify(receipt),
-        secret
-      ).toString()
+      const encrypted = CryptoJS.AES.encrypt(receipt.id, secret).toString()
       receipt.signature = `https://seerviashish.github.io/rent-receipt/view?qr=${encodeURIComponent(
         encrypted
       )}`
