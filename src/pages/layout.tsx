@@ -1,7 +1,7 @@
 import { Home as HomeIcon } from '@mui/icons-material'
 import { AppBar, Box, Button, Container, Toolbar } from '@mui/material'
 import * as React from 'react'
-import { Link, Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 
 const pages = [
   { name: 'Home', link: '/rent-receipt/' },
@@ -10,6 +10,8 @@ const pages = [
 ]
 
 const Layout: React.FC = () => {
+  const navigate = useNavigate()
+
   return (
     <main>
       <AppBar position="sticky">
@@ -21,8 +23,11 @@ const Layout: React.FC = () => {
                 <Button
                   key={page.name}
                   sx={{ my: 2, color: 'white', display: 'block' }}
+                  onClick={() => {
+                    navigate(page.link)
+                  }}
                 >
-                  <Link to={page.link}>{page.name}</Link>
+                  {page.name}
                 </Button>
               ))}
             </Box>
