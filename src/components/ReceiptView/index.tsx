@@ -162,7 +162,7 @@ const ReceiptView: React.FC<IReceiptView> = ({ qrCode }) => {
                   <Typography component={'strong'} className="!font-bold">
                     {` ${
                       receipt?.rentCollectedOn?.format('DD MMM, YYYY') ?? ''
-                    } '`}
+                    } `}
                   </Typography>
                   <Typography component={'span'}>
                     {'towards the rent @'}
