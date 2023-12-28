@@ -116,7 +116,11 @@ const ReceiptView: React.FC<IReceiptView> = ({ qrCode }) => {
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="body1" component={'p'}>
+                <Typography
+                  variant="body1"
+                  component={'p'}
+                  className="hyphens-auto"
+                >
                   {'Received a sum of'}
                   <Typography component={'strong'} className="!font-bold">
                     {` ${receipt?.tenant?.currency ?? ''} ${

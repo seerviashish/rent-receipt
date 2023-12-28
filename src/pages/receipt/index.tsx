@@ -12,15 +12,15 @@ const Receipt: React.FC = () => {
       {qrCode && qrCode?.trim().length > 0 ? (
         <ReceiptView qrCode={qrCode} />
       ) : (
-        <Box className="flex justify-center">
-          <Typography variant="h4">
+        <Box className="flex flex-col items-center gap-2">
+          <Typography variant="h4" className=" text-center">
             {'No receipt QR code found. Please scan QR code on receipt.'}
           </Typography>
           <Link
             component="button"
             variant="h4"
             onClick={() => {
-              navigate('/')
+              navigate('/rent-receipt/')
             }}
           >
             Navigate to Generate Rent Receipt

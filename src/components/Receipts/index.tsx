@@ -49,7 +49,11 @@ const Receipts: React.FC<IReceipts> = ({ receipts }) => {
                 </Typography>
               </Box>
               <Box>
-                <Typography variant="body1" component={'p'}>
+                <Typography
+                  variant="body1"
+                  component={'p'}
+                  className="hyphens-auto"
+                >
                   {'Received a sum of'}
                   <Typography component={'strong'} className="!font-bold">
                     {` ${
@@ -149,9 +153,7 @@ const Receipts: React.FC<IReceipts> = ({ receipts }) => {
                         import.meta.env.MODE === 'production'
                           ? 'https://seerviashish.github.io/rent-receipt/'
                           : window.location.href
-                      }receipt?qr=${encodeURIComponent(
-                        JSON.stringify(receipt)
-                      )}`}
+                      }?qr=${encodeURIComponent(JSON.stringify(receipt))}`}
                       viewBox={`0 0 256 256`}
                       level="H"
                       bgColor={'#ffffff00'}
