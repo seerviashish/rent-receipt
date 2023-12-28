@@ -30,6 +30,28 @@ export type Receipt = {
   signature?: string
 }
 
+export type ReceiptAsJson = {
+  id: string
+  tenant: {
+    name: string
+    rentPerMonth: number
+    email: string
+    address: string
+    panNo: string
+    currency: string
+  }
+  landLord: {
+    name: string
+    panNo: string
+    address: string
+  }
+  rentFrom: string
+  rentUpto: string
+  rentCollectedOn: string
+  paymentMode: string
+  signature?: string
+}
+
 export type Enumerate<
   N extends number,
   Acc extends number[] = [],
@@ -41,3 +63,15 @@ export type IntRange<F extends number, T extends number> = Exclude<
   Enumerate<T>,
   Enumerate<F>
 >
+
+export type FormValue<T> = {
+  data?: T
+  isError?: boolean
+  error?: string
+}
+
+export enum Verification {
+  PENDING = 'PENDING',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+}

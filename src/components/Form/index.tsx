@@ -24,18 +24,12 @@ import ordinal from 'ordinal'
 import React, { useRef, useState } from 'react'
 import { NumericFormat, NumericFormatProps } from 'react-number-format'
 import { v4 as uuidV4 } from 'uuid'
-import { IntRange, PaymentMode, Receipt } from '../../types'
+import { FormValue, IntRange, PaymentMode, Receipt } from '../../types'
 import { round } from '../../utils'
 
 interface IForm {
   setReceipts: (receipts: Receipt[]) => void
   receipts: Receipt[]
-}
-
-type FormValue<T> = {
-  data?: T
-  isError?: boolean
-  error?: string
 }
 
 type RentCollectedOnData = `${IntRange<1, 29> | 'endOfMonth'}`
@@ -518,10 +512,11 @@ const Form: React.FC<IForm> = ({ setReceipts, receipts }) => {
     }
     const secret = formData.secretPhrase.data
     const updatedReceipts = receipts.map((receipt) => {
-      const encrypted = CryptoJS.AES.encrypt(receipt.id, secret).toString()
-      receipt.signature = `https://seerviashish.github.io/rent-receipt/view?qr=${encodeURIComponent(
-        encrypted
-      )}`
+      const encryptedIdSign = CryptoJS.AES.encrypt(
+        receipt.id,
+        secret
+      ).toString()
+      receipt.signature = encryptedIdSign
       return receipt
     })
     setReceipts(updatedReceipts)

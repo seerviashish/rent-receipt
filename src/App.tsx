@@ -1,16 +1,11 @@
-import { useState } from 'react'
-import Form from './components/Form'
-import Receipts from './components/Receipts'
-import { Receipt } from './types'
+import { BrowserRouter } from 'react-router-dom'
+import PageRoutes from './pages/routes'
 
 const App: React.FC = () => {
-  const [receipts, setReceipts] = useState<Receipt[]>([])
-
   return (
-    <>
-      <Form setReceipts={setReceipts} receipts={receipts} />
-      <Receipts receipts={receipts} />
-    </>
+    <BrowserRouter basename="rent-receipt">
+      <PageRoutes />
+    </BrowserRouter>
   )
 }
 
