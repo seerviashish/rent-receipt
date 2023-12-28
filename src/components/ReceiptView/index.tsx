@@ -220,7 +220,7 @@ const ReceiptView: React.FC<IReceiptView> = ({ qrCode }) => {
                       viewBox={`0 0 256 256`}
                       level="H"
                       bgColor={'#ffffff00'}
-                      fgColor={'#000000'}
+                      fgColor={'#00000090'}
                     />
                   )}
                 </Box>

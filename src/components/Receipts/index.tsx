@@ -145,13 +145,17 @@ const Receipts: React.FC<IReceipts> = ({ receipts }) => {
                         maxWidth: '100%',
                         width: '100%',
                       }}
-                      value={`https://seerviashish.github.io/rent-receipt/receipt?qr=${encodeURIComponent(
+                      value={`${
+                        import.meta.env.MODE === 'production'
+                          ? 'https://seerviashish.github.io/rent-receipt/'
+                          : window.location.href
+                      }receipt?qr=${encodeURIComponent(
                         JSON.stringify(receipt)
                       )}`}
                       viewBox={`0 0 256 256`}
                       level="H"
                       bgColor={'#ffffff00'}
-                      fgColor={'#000000'}
+                      fgColor={'#00000090'}
                     />
                   )}
                 </Box>
