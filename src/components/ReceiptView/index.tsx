@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@mui/material'
 import CryptoJS from 'crypto-js'
+import { Base64 } from 'js-base64'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 import QRCode from 'react-qr-code'
@@ -39,7 +40,7 @@ const ReceiptView: React.FC<IReceiptView> = ({ qrCode }) => {
     if (qrCode == null || (qrCode ?? '').trim().length == 0) {
       return
     }
-    const decodedQrCode = decodeURIComponent(qrCode)
+    const decodedQrCode = Base64.decode(decodeURIComponent(qrCode))
     const parsedQrCode = JSON.parse(decodedQrCode) as ReceiptAsJson
     const receipt: Receipt & { verification: Verification } = {
       id: parsedQrCode.id,
@@ -74,7 +75,7 @@ const ReceiptView: React.FC<IReceiptView> = ({ qrCode }) => {
     if (qrCode == null || (qrCode ?? '').trim().length == 0) {
       return
     }
-    const decodedQrCode = decodeURIComponent(qrCode)
+    const decodedQrCode = Base64.decode(decodeURIComponent(qrCode))
     const parsedQrCode = JSON.parse(decodedQrCode) as ReceiptAsJson
     const decryptedSignature = CryptoJS.AES.decrypt(
       parsedQrCode?.signature ?? '',

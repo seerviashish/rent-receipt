@@ -412,19 +412,26 @@ const Form: React.FC<IForm> = ({ setReceipts, receipts }) => {
     let startDate = (formData.rentFrom.data as Moment).clone()
     const endDate = (formData.rentUpto.data as Moment).clone()
     const duration: { from: Moment; end: Moment }[] = []
+    const includeRentUptoDate = formData?.includeRentUptoDate?.data ?? false
+
     for (
       ;
-      startDate.isBefore(endDate);
+      includeRentUptoDate
+        ? startDate.startOf('M').isSameOrBefore(endDate)
+        : startDate.startOf('M').isBefore(endDate);
       startDate = startDate.add(1, 'M').startOf('M')
     ) {
       duration.push({
-        from: startDate.clone(),
+        from: startDate.clone().isSameOrBefore(formData.rentFrom.data)
+          ? (formData.rentFrom.data as Moment).clone()
+          : startDate.clone(),
         end: startDate.endOf('M').isAfter(endDate)
-          ? endDate.clone()
+          ? includeRentUptoDate
+            ? endDate.clone()
+            : endDate.clone().subtract(1, 'd')
           : startDate.endOf('M').clone(),
       })
     }
-
     const yourName = formData.yourName.data
     const emailAddress = formData.yourEmail.data
     const rentPerMonth = formData.monthlyRent.data
@@ -435,20 +442,12 @@ const Form: React.FC<IForm> = ({ setReceipts, receipts }) => {
     const landLordsPanNo = formData.landLordPanNo.data
     const rentCollectedOn = formData.rentCollectedOn.data
     const rentCollectedOnMonth = formData.rentCollectedOnMonth.data
-    const total12MonthDays = (formData.rentFrom.data as Moment)
-      .clone()
-      .add(12, 'M')
-      .diff((formData.rentFrom.data as Moment).clone(), 'days')
+
     const paymentMode = formData.paymentMode.data
     const currency = formData.currencySymbol.data
-    const rentPerDay = (formData.monthlyRent.data * 12) / total12MonthDays
-    const includeRentUptoDate = formData?.includeRentUptoDate?.data ?? false
-    duration.forEach((timeSlot, index) => {
-      const noOfDays =
-        Math.abs(timeSlot.end.diff(timeSlot.from, 'days')) +
-        (index < duration.length - 1 ? 1 : 0) +
-        (index == duration.length - 1 && includeRentUptoDate ? 1 : 0)
-
+    duration.forEach((timeSlot) => {
+      const noOfDays = Math.abs(timeSlot.end.diff(timeSlot.from, 'days')) + 1
+      const rentPerDay = rentPerMonth / timeSlot.from.daysInMonth()
       receipts.push({
         tenant: {
           name: yourName,

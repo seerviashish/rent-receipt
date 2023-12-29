@@ -1,5 +1,6 @@
 import PrintIcon from '@mui/icons-material/Print'
 import { Box, Button, Typography } from '@mui/material'
+import { Base64 } from 'js-base64'
 import React, { useRef } from 'react'
 import QRCode from 'react-qr-code'
 import ReactToPrint from 'react-to-print'
@@ -153,7 +154,9 @@ const Receipts: React.FC<IReceipts> = ({ receipts }) => {
                         import.meta.env.MODE === 'production'
                           ? 'https://seerviashish.github.io/rent-receipt/'
                           : window.location.href
-                      }?qr=${encodeURIComponent(JSON.stringify(receipt))}`}
+                      }?qr=${encodeURIComponent(
+                        Base64.encode(JSON.stringify(receipt))
+                      )}`}
                       viewBox={`0 0 256 256`}
                       level="H"
                       bgColor={'#ffffff00'}
