@@ -355,22 +355,24 @@ const Form: React.FC<IForm> = ({ setReceipts, receipts }) => {
     rentCollectedOn: RentCollectedOnData,
     rentCollectedOnMonth: RentCollectedOnMonth,
     startDate: Moment,
-    endDate: Moment
+    endDate: Moment,
+    rentUpto: Moment
   ): Moment => {
     if (rentCollectedOn === 'endOfMonth') {
-      const endOfCurrentMonth = startDate.endOf('M')
-      const endOfNextMonth = startDate.clone().add(1, 'M')
+      const endOfCurrentMonth = startDate.clone().endOf('M')
+      const endOfNextMonth = startDate.clone().add(1, 'M').endOf('M')
       const rentCollectedOnDate =
         rentCollectedOnMonth === 'current'
-          ? endOfCurrentMonth.isAfter(endDate)
-            ? endDate
+          ? endOfCurrentMonth.isAfter(rentUpto)
+            ? rentUpto
             : endOfCurrentMonth
-          : endOfNextMonth
+          : endOfNextMonth.isAfter(rentUpto)
+            ? rentUpto
+            : endOfNextMonth
 
       return rentCollectedOnDate
     }
     const days = parseInt(rentCollectedOn) - 1
-    const startOfCurrentMonth = startDate.startOf('M')
     const rentDateOfCurrentMonth = startDate.clone().startOf('M').add(days, 'd')
     const rentDateOfNextMonth = startDate
       .clone()
@@ -379,11 +381,14 @@ const Form: React.FC<IForm> = ({ setReceipts, receipts }) => {
       .add(days, 'd')
     const rentCollectedOnDate =
       rentCollectedOnMonth === 'current'
-        ? startOfCurrentMonth.isBefore(startDate)
+        ? rentDateOfCurrentMonth.isBefore(startDate)
           ? startDate
-          : rentDateOfCurrentMonth
-        : rentDateOfNextMonth
-
+          : rentDateOfCurrentMonth.isAfter(endDate)
+            ? endDate
+            : rentDateOfCurrentMonth
+        : rentDateOfNextMonth.isAfter(rentUpto)
+          ? rentUpto
+          : rentDateOfNextMonth
     return rentCollectedOnDate
   }
 
@@ -470,7 +475,8 @@ const Form: React.FC<IForm> = ({ setReceipts, receipts }) => {
           rentCollectedOn,
           rentCollectedOnMonth,
           timeSlot.from,
-          timeSlot.end
+          timeSlot.end,
+          endDate
         ),
         paymentMode,
         rentFrom: timeSlot.from,
