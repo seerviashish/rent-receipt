@@ -229,7 +229,7 @@ const ReceiptView: React.FC<IReceiptView> = ({ qrCode }) => {
                     />
                   )}
                 </Box>
-                <Box className="flex flex-1 flex-col items-end justify-between gap-2 sm:flex-grow-0 sm:items-center print:flex-grow-0">
+                <Box className="flex flex-1 flex-col items-end justify-between gap-2 sm:grow-0  sm:items-center print:grow-0">
                   <Box className="flex flex-col items-center gap-2">
                     <Chip
                       label={
@@ -320,7 +320,7 @@ const ReceiptView: React.FC<IReceiptView> = ({ qrCode }) => {
             <Button
               variant="contained"
               onClick={() => {
-                navigate('/')
+                navigate('/rent-receipt/')
               }}
             >
               {'Generate Rent Receipt'}
