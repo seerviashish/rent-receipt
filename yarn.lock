@@ -4586,10 +4586,10 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-to-words@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/to-words/-/to-words-4.0.0.tgz#586e5214c346c2eb1283a21302bd20086613f4ce"
-  integrity sha512-a05O5RDrjBcnNWR1GHXo7PH9GMsESNtoqmm60EnTMdCIWefcVKMwrzWQGxN0jSaYwwxnU6iBu5oWNV2lsRT5/g==
+to-words@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/to-words/-/to-words-4.0.1.tgz#e24f8ee3b5b3024aa65a27a66f561b7bfd660eda"
+  integrity sha512-HzVs4DbkPk1nJsBnllotj44tEXc5SIZIKpSwRanNe1fy1hFbBgipZSOmNYVvmZQMkQfBQf9mA6F6XbNU2QuA0A==
 
 trim-repeated@^1.0.0:
   version "1.0.0"
