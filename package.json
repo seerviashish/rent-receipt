@@ -38,7 +38,7 @@
     "react-dom": "^18.3.1",
     "react-number-format": "^5.3.4",
     "react-qr-code": "^2.0.12",
-    "react-router-dom": "^6.23.0",
+    "react-router-dom": "^6.23.1",
     "react-to-print": "^2.15.0",
     "to-words": "^4.0.1",
     "uuid": "^9.0.1"
