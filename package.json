@@ -41,7 +41,7 @@
     "react-router-dom": "^6.23.1",
     "react-to-print": "^2.15.0",
     "to-words": "^4.0.1",
-    "uuid": "^9.0.1"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",
