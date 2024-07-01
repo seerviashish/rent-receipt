@@ -62,7 +62,7 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
     "mkver": "^3.0.2",
-    "postcss": "^8.4.37",
+    "postcss": "^8.4.39",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "release-it": "^17.4.0",
