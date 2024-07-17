@@ -4110,10 +4110,10 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-to-words@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/to-words/-/to-words-4.0.1.tgz#e24f8ee3b5b3024aa65a27a66f561b7bfd660eda"
-  integrity sha512-HzVs4DbkPk1nJsBnllotj44tEXc5SIZIKpSwRanNe1fy1hFbBgipZSOmNYVvmZQMkQfBQf9mA6F6XbNU2QuA0A==
+to-words@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/to-words/-/to-words-4.1.0.tgz#6f2229ea75990d22e6bfd80a52278415d88c2432"
+  integrity sha512-42GLFZQr/7i3sNiXJ7J83Kkw3hj8pWdTtj5kPjSWnyr1lkxmCnC2Dkx8JMttMAnQxj76ktyGpuDRsrxU5UeXpw==
 
 trim-repeated@^1.0.0:
   version "1.0.0"
