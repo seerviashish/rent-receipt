@@ -3424,7 +3424,7 @@ postcss-value-parser@^4.0.0, postcss-value-parser@^4.2.0:
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
-postcss@^8.4.23, postcss@^8.4.4, postcss@^8.4.41, postcss@^8.4.45:
+postcss@^8.4.23, postcss@^8.4.4, postcss@^8.4.43, postcss@^8.4.45:
   version "8.4.45"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.45.tgz#538d13d89a16ef71edbf75d895284ae06b79e603"
   integrity sha512-7KTLTdzdZZYscUc65XmjFiB73vBhBfbPztCYdUNvlaso9PrzjzcmjqBPR0lNGkcVlcO4BjiO5rK/qNz+XAen1Q==
@@ -4271,13 +4271,13 @@ uuid@^10.0.0:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-10.0.0.tgz#5a95aa454e6e002725c79055fd42aaba30ca6294"
   integrity sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==
 
-vite@^5.4.2:
-  version "5.4.2"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-5.4.2.tgz#8acb6ec4bfab823cdfc1cb2d6c53ed311bc4e47e"
-  integrity sha512-dDrQTRHp5C1fTFzcSaMxjk6vdpKvT+2/mIdE07Gw2ykehT49O0z/VHS3zZ8iV/Gh8BJJKHWOe5RjaNrW5xf/GA==
+vite@^5.4.4:
+  version "5.4.4"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-5.4.4.tgz#3da90314b617047366459443320ea78f39111008"
+  integrity sha512-RHFCkULitycHVTtelJ6jQLd+KSAAzOgEYorV32R2q++M6COBjKJR6BxqClwp5sf0XaBDjVMuJ9wnNfyAJwjMkA==
   dependencies:
     esbuild "^0.21.3"
-    postcss "^8.4.41"
+    postcss "^8.4.43"
     rollup "^4.20.0"
   optionalDependencies:
     fsevents "~2.3.3"
