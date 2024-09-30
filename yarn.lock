@@ -3562,10 +3562,10 @@ react-router@6.26.2:
   dependencies:
     "@remix-run/router" "1.19.2"
 
-react-to-print@^2.15.0:
-  version "2.15.0"
-  resolved "https://registry.yarnpkg.com/react-to-print/-/react-to-print-2.15.0.tgz#2f2cca67965cefcc54956d4269b1b5da42857771"
-  integrity sha512-B5M2F2Mit1+glO64x9vCcNL2TiAmZ6iegybVvDs6NhNyTo1MXYlODoNky8vboWFnkcO5R/wz6XlTUK9HFIlWiQ==
+react-to-print@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-to-print/-/react-to-print-3.0.0.tgz#636fca1096ab45cb4073a53befbc0debca6db6f2"
+  integrity sha512-FyPaTCzZgZyrUe3J3yNth7XrQZJ1l+5ODzB4CDxv1VOQbEKnGtNpasDbsVDLiyXHu5UNBxg2eD2HmRzCoCagJw==
 
 react-transition-group@^4.4.5:
   version "4.4.5"
