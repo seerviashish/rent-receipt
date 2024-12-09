@@ -22,7 +22,7 @@
     "release": "yarn build && yarn release-it"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.3",
+    "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.13.5",
     "@fontsource/roboto": "^5.1.0",
     "@mui/icons-material": "^5.16.8",
