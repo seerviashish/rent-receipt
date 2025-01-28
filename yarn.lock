@@ -3436,10 +3436,10 @@ react-router@7.1.3:
     set-cookie-parser "^2.6.0"
     turbo-stream "2.4.0"
 
-react-to-print@^2.15.0:
-  version "2.15.0"
-  resolved "https://registry.yarnpkg.com/react-to-print/-/react-to-print-2.15.0.tgz#2f2cca67965cefcc54956d4269b1b5da42857771"
-  integrity sha512-B5M2F2Mit1+glO64x9vCcNL2TiAmZ6iegybVvDs6NhNyTo1MXYlODoNky8vboWFnkcO5R/wz6XlTUK9HFIlWiQ==
+react-to-print@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/react-to-print/-/react-to-print-3.0.5.tgz#7569f9ac5e7854dbec79f449501fedf28cda82ab"
+  integrity sha512-Z15MwMOzYCHWi26CZeFNwflAg7Nr8uWD6FTj+EkfIOjYyjr0MXGbI0c7rF4Fgrbj3XG9hFndb1ourxpPz2RAiA==
 
 react-transition-group@^4.4.5:
   version "4.4.5"
