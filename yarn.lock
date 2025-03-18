@@ -3962,10 +3962,10 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-to-words@^4.3.1:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/to-words/-/to-words-4.3.1.tgz#34e30d728a864197bd4e7b83a0bba708f8311eb0"
-  integrity sha512-eA/EcqXgSFjCVSIgf6yF7sCRBvsBHFoS2q56zVqDl9wmPzI7O9C/eUaoxAoFM3fSm7o58HMwwaPyEkjXrZH8Lg==
+to-words@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/to-words/-/to-words-4.4.0.tgz#ec3fd0db60f9a8f7da9aa8bbf15d12a8152d1da9"
+  integrity sha512-QJBzzPT4mNZ5xnHgcbR5LiQfLUYDc7HvughfzwAPhgd6QljoqE4wKbQIHmAUf5UybQbjJyI/Iz+HYM9Rv05Tmw==
 
 trim-repeated@^1.0.0:
   version "1.0.0"
