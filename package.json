@@ -68,7 +68,7 @@
     "release-it": "^19.0.1",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
-    "vite": "^6.3.2"
+    "vite": "^6.3.3"
   },
   "release-it": {
     "git": {
