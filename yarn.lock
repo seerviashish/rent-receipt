@@ -2770,10 +2770,10 @@ minimatch@^9.0.1, minimatch@^9.0.4:
   resolved "https://registry.yarnpkg.com/minipass/-/minipass-7.0.4.tgz#dbce03740f50a4786ba994c1fb908844d27b038c"
   integrity sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==
 
-mkver@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/mkver/-/mkver-3.0.2.tgz#5aa7120eac120295426d16f764594b881d40721a"
-  integrity sha512-05L3B2jKntdZuM0N1WGITzLLbpl955+ud1yO6I9Gz6zGWt4UCUYPBdp9hb3QP/4GabgzWz89IHvo3YBq/qjHDg==
+mkver@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/mkver/-/mkver-4.0.1.tgz#45570bdaaa5f309089e0aa07ce30c06bbb90a261"
+  integrity sha512-tP/DC0pQK+l+xSCsEVdw28g3QKCrDDglLD0fz5oVBWXL/Za5TJXa1iHbxJHimM4q/x+4fd3uWUuiklEOaT73Mg==
 
 moment@^2.30.1:
   version "2.30.1"
