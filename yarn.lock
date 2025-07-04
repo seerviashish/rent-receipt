@@ -3288,10 +3288,10 @@ react-number-format@^5.4.4:
   resolved "https://registry.yarnpkg.com/react-number-format/-/react-number-format-5.4.4.tgz#d31f0e260609431500c8d3f81bbd3ae1fb7cacad"
   integrity sha512-wOmoNZoOpvMminhifQYiYSTCLUDOiUbBunrMrMjA+dV52sY+vck1S4UhR6PkgnoCquvvMSeJjErXZ4qSaWCliA==
 
-react-qr-code@^2.0.16:
-  version "2.0.16"
-  resolved "https://registry.yarnpkg.com/react-qr-code/-/react-qr-code-2.0.16.tgz#5e382b5d1279a6d69db3c9e8e3e3f7c0016bd701"
-  integrity sha512-8f54aTOo7DxYr1LB47pMeclV5SL/zSbJxkXHIS2a+QnAIa4XDVIdmzYRC+CBCJeDLSCeFHn8gHtltwvwZGJD/w==
+react-qr-code@^2.0.17:
+  version "2.0.17"
+  resolved "https://registry.yarnpkg.com/react-qr-code/-/react-qr-code-2.0.17.tgz#30990c08374c9235ca614f3311318fe790557bb9"
+  integrity sha512-3ufx+4kKtdaipw09lwrawRtfvoYUPpOljvwMvsMvTBBCa21zqugwaxfSi9J1GLLKJGNpPlYhd1LOmDHAivsiaQ==
   dependencies:
     prop-types "^15.8.1"
     qr.js "0.0.0"
