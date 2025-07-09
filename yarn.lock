@@ -3801,10 +3801,10 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-to-words@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/to-words/-/to-words-4.6.0.tgz#6331a556672c405e9e023d7956fc2ba6cafe6173"
-  integrity sha512-az4QR+yBvEl2IoIGePdExNOmyJR0K4QSY/qK+mlQkYJl9K6OedlrDr3w2YjLVGgA4BjMPxJOFkaz09OPrzFceg==
+to-words@^4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/to-words/-/to-words-4.7.0.tgz#9aae476d0bd1e8ee72d04db852dd5102f9786451"
+  integrity sha512-A113L8FrmpHBTbH2Y/c7phYTpeVWYadbXFCAGrc4pnxGzC+x14ju44UO0+8HMJA9SlsuV2dS6UzrHT236SJenw==
 
 trim-repeated@^1.0.0:
   version "1.0.0"
