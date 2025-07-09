@@ -40,7 +40,7 @@
     "react-qr-code": "^2.0.18",
     "react-router-dom": "^7.6.3",
     "react-to-print": "^2.15.0",
-    "to-words": "^4.6.0",
+    "to-words": "^4.7.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
