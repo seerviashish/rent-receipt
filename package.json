@@ -27,7 +27,7 @@
     "@fontsource/roboto": "^5.2.6",
     "@mui/icons-material": "^5.18.0",
     "@mui/material": "^5.18.0",
-    "@mui/x-date-pickers": "^6.20.0",
+    "@mui/x-date-pickers": "^8.9.0",
     "@types/crypto-js": "^4.2.2",
     "crypto-js": "^4.2.0",
     "crypto-random-string": "^5.0.0",
