@@ -61,7 +61,7 @@
     "git-cz": "^4.9.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
-    "mkver": "^4.0.2",
+    "mkver": "^4.0.3",
     "postcss": "^8.5.6",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.5.14",
