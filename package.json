@@ -60,7 +60,7 @@
     "gh-pages": "^6.3.0",
     "git-cz": "^4.9.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.5",
+    "lint-staged": "^16.1.6",
     "mkver": "^4.0.2",
     "postcss": "^8.5.6",
     "prettier": "^3.3.2",
