@@ -1,44 +1,44 @@
-name: Dependabot auto-merge
-on: pull_request
+# name: Dependabot auto-merge
+# on: pull_request
 
-permissions:
-  contents: write
-  pull-requests: write
+# permissions:
+#   contents: write
+#   pull-requests: write
 
-jobs:
-  dependabot:
-    runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+# jobs:
+#   dependabot:
+#     runs-on: ubuntu-latest
+#     if: ${{ github.actor == 'dependabot[bot]' }}
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
 
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: lts/*
-          cache: 'yarn'
+#       - name: Set up Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: lts/*
+#           cache: 'yarn'
 
-      - name: Install dependencies, Check types, Check linting, Build
-        run: |
-          yarn install --frozen-lockfile
-          yarn lint:check
-          yarn build
+#       - name: Install dependencies, Check types, Check linting, Build
+#         run: |
+#           yarn install --frozen-lockfile
+#           yarn lint:check
+#           yarn build
 
-      - name: Merge PR
-        if: success()
-        run: gh pr merge --auto --merge "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+#       - name: Merge PR
+#         if: success()
+#         run: gh pr merge --auto --merge "$PR_URL"
+#         env:
+#           PR_URL: ${{github.event.pull_request.html_url}}
+#           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Reject PR
-        if: failure()
-        run: |
-          gh pr comment --body "Main workflow is failed! Since I am closing this PR" "$PR_URL"
-          gh pr close "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+#       - name: Reject PR
+#         if: failure()
+#         run: |
+#           gh pr comment --body "Main workflow is failed! Since I am closing this PR" "$PR_URL"
+#           gh pr close "$PR_URL"
+#         env:
+#           PR_URL: ${{github.event.pull_request.html_url}}
+#           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
