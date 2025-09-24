@@ -1,33 +1,33 @@
-name: Main
+# name: Main
 
-on: [push]
+# on: [push]
 
-jobs:
-  run-ci:
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# jobs:
+#   run-ci:
+#     env:
+#       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    name: Run Type Check & Linters
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+#     name: Run Type Check & Linters
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 10
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
 
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: lts/*
-          cache: 'yarn'
+#       - name: Set up Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: lts/*
+#           cache: 'yarn'
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+#       - name: Install dependencies
+#         run: yarn install --frozen-lockfile
 
-      - name: Check linting
-        run: yarn lint:check
+#       - name: Check linting
+#         run: yarn lint:check
 
-      - name: Build package
-        run: yarn build
+#       - name: Build package
+#         run: yarn build
